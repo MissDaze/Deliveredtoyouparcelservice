@@ -1,115 +1,205 @@
-// Parcel tracking data
-const parcels = {
-    'DT123456789': {
-        status: 'In Transit',
-        location: 'Distribution Center, New York',
-        estimatedDelivery: '2025-01-22',
+// Tracking data for different tracking numbers
+const trackingData = {
+    "DT123456789": {
+        sender: {
+            origin: "China",
+            name: "Global Exports Ltd"
+        },
+        receiver: {
+            name: "Candice Sean",
+            address: "1 Vale St, St Kilda VIC, Australia"
+        },
+        estimatedDelivery: "2025-01-22",
+        currentStatus: "In Transit",
         updates: [
-            { date: '2025-01-15', status: 'Package received at origin facility' },
-            { date: '2025-01-16', status: 'In transit to destination' },
-            { date: '2025-01-17', status: 'Arrived at distribution center' }
+            {
+                date: "2024-12-31",
+                time: "09:00",
+                location: "Beijing, China",
+                status: "Package picked up",
+                description: "Your package has been picked up from the sender"
+            },
+            {
+                date: "2025-01-02",
+                time: "14:30",
+                location: "Shanghai Port, China",
+                status: "Departed facility",
+                description: "Package has departed from Shanghai Port"
+            },
+            {
+                date: "2025-01-05",
+                time: "18:45",
+                location: "In Transit",
+                status: "In transit to destination country",
+                description: "Your package is on its way to Australia"
+            }
         ]
     },
-    'DT987654321': {
-        status: 'Out for Delivery',
-        location: 'Local Delivery Hub, Los Angeles',
-        estimatedDelivery: '2025-01-25',
+    "DT987654321": {
+        sender: {
+            origin: "China",
+            name: "Asia Trade Co"
+        },
+        receiver: {
+            name: "Candice Sean",
+            address: "1 Vale St, St Kilda VIC, Australia"
+        },
+        estimatedDelivery: "2025-01-25",
+        currentStatus: "Customs Clearance",
         updates: [
-            { date: '2025-01-14', status: 'Package received at origin facility' },
-            { date: '2025-01-15', status: 'In transit to destination' },
-            { date: '2025-01-17', status: 'Out for delivery' }
+            {
+                date: "2024-12-31",
+                time: "10:15",
+                location: "Shenzhen, China",
+                status: "Package received",
+                description: "Package received at sorting facility"
+            },
+            {
+                date: "2025-01-03",
+                time: "16:20",
+                location: "Hong Kong",
+                status: "In transit",
+                description: "Package in transit through Hong Kong hub"
+            },
+            {
+                date: "2025-01-07",
+                time: "08:00",
+                location: "Melbourne, Australia",
+                status: "Customs clearance",
+                description: "Package is undergoing customs clearance"
+            }
         ]
     },
-    'DT456789123': {
-        status: 'Delivered',
-        location: 'Chicago, IL',
-        estimatedDelivery: '2025-01-23',
+    "DT456789123": {
+        sender: {
+            origin: "China",
+            name: "Pacific Shipping Inc"
+        },
+        receiver: {
+            name: "Candice Sean",
+            address: "1 Vale St, St Kilda VIC, Australia"
+        },
+        estimatedDelivery: "2025-01-23",
+        currentStatus: "Out for Delivery",
         updates: [
-            { date: '2025-01-10', status: 'Package received at origin facility' },
-            { date: '2025-01-12', status: 'In transit to destination' },
-            { date: '2025-01-15', status: 'Delivered' }
+            {
+                date: "2024-12-31",
+                time: "11:30",
+                location: "Guangzhou, China",
+                status: "Package collected",
+                description: "Package has been collected from sender"
+            },
+            {
+                date: "2025-01-02",
+                time: "15:45",
+                location: "Guangzhou Port, China",
+                status: "Departed",
+                description: "Package departed from port facility"
+            },
+            {
+                date: "2025-01-04",
+                time: "09:20",
+                location: "Sydney, Australia",
+                status: "Arrived at facility",
+                description: "Package arrived at Australian sorting facility"
+            },
+            {
+                date: "2025-01-06",
+                time: "07:15",
+                location: "Melbourne Distribution Center",
+                status: "Out for delivery",
+                description: "Package is out for delivery to your address"
+            }
         ]
     }
 };
 
-// DOM elements
-const trackingForm = document.getElementById('trackingForm');
-const trackingInput = document.getElementById('trackingNumber');
-const trackingResult = document.getElementById('trackingResult');
-const parcelInfo = document.getElementById('parcelInfo');
-
-// Track parcel function
-function trackParcel(trackingNumber) {
-    const parcel = parcels[trackingNumber];
+// Function to track package
+function trackPackage() {
+    const trackingNumber = document.getElementById('trackingNumber').value.trim();
+    const resultDiv = document.getElementById('trackingResult');
     
-    if (parcel) {
-        displayParcelInfo(trackingNumber, parcel);
-    } else {
-        displayError();
+    if (!trackingNumber) {
+        resultDiv.innerHTML = '<div class="error">Please enter a tracking number</div>';
+        return;
     }
-}
-
-// Display parcel information
-function displayParcelInfo(trackingNumber, parcel) {
-    let updatesHTML = '';
-    parcel.updates.forEach(update => {
-        updatesHTML += `
-            <div class="update-item">
-                <strong>${update.date}</strong>: ${update.status}
+    
+    const data = trackingData[trackingNumber];
+    
+    if (!data) {
+        resultDiv.innerHTML = '<div class="error">Tracking number not found. Please check and try again.</div>';
+        return;
+    }
+    
+    // Display tracking information
+    let html = `
+        <div class="tracking-info">
+            <div class="info-section">
+                <h3>Package Information</h3>
+                <div class="info-row">
+                    <span class="label">Tracking Number:</span>
+                    <span class="value">${trackingNumber}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Origin:</span>
+                    <span class="value">${data.sender.origin}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Sender:</span>
+                    <span class="value">${data.sender.name}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Receiver:</span>
+                    <span class="value">${data.receiver.name}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Delivery Address:</span>
+                    <span class="value">${data.receiver.address}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Current Status:</span>
+                    <span class="value status-${data.currentStatus.toLowerCase().replace(/\s+/g, '-')}">${data.currentStatus}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Estimated Delivery:</span>
+                    <span class="value">${data.estimatedDelivery}</span>
+                </div>
+            </div>
+            
+            <div class="timeline-section">
+                <h3>Tracking History</h3>
+                <div class="timeline">
+    `;
+    
+    // Add timeline updates (reverse order to show latest first)
+    data.updates.slice().reverse().forEach((update, index) => {
+        html += `
+            <div class="timeline-item ${index === 0 ? 'active' : ''}">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <span class="timeline-date">${update.date} ${update.time}</span>
+                        <span class="timeline-status">${update.status}</span>
+                    </div>
+                    <div class="timeline-location">${update.location}</div>
+                    <div class="timeline-description">${update.description}</div>
+                </div>
             </div>
         `;
     });
-
-    parcelInfo.innerHTML = `
-        <div class="info-item">
-            <strong>Tracking Number:</strong> ${trackingNumber}
-        </div>
-        <div class="info-item">
-            <strong>Status:</strong> <span class="status-badge">${parcel.status}</span>
-        </div>
-        <div class="info-item">
-            <strong>Current Location:</strong> ${parcel.location}
-        </div>
-        <div class="info-item">
-            <strong>Estimated Delivery:</strong> ${parcel.estimatedDelivery}
-        </div>
-        <div class="updates-section">
-            <h3>Tracking Updates</h3>
-            ${updatesHTML}
+    
+    html += `
+                </div>
+            </div>
         </div>
     `;
     
-    trackingResult.style.display = 'block';
+    resultDiv.innerHTML = html;
 }
 
-// Display error message
-function displayError() {
-    parcelInfo.innerHTML = `
-        <div class="error-message">
-            <p>❌ Tracking number not found. Please check and try again.</p>
-        </div>
-    `;
-    trackingResult.style.display = 'block';
-}
-
-// Form submit event
-trackingForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const trackingNumber = trackingInput.value.trim().toUpperCase();
-    
-    if (trackingNumber) {
-        trackParcel(trackingNumber);
+// Add event listener for Enter key
+document.getElementById('trackingNumber').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        trackPackage();
     }
-});
-
-// Sample tracking numbers for demo
-document.addEventListener('DOMContentLoaded', () => {
-    const sampleNumbers = document.createElement('div');
-    sampleNumbers.className = 'sample-numbers';
-    sampleNumbers.innerHTML = `
-        <p style="text-align: center; margin-top: 20px; color: #666;">
-            <small>Try these sample tracking numbers: DT123456789, DT987654321, DT456789123</small>
-        </p>
-    `;
-    trackingForm.parentNode.insertBefore(sampleNumbers, trackingForm.nextSibling);
 });
