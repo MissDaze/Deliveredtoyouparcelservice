@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivered to You - Parcel Tracking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .tracking-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-track {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-track:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .demo-numbers {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .demo-numbers h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .demo-numbers ul {
+            list-style: none;
+        }
+
+        .demo-numbers li {
+            padding: 8px 0;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .demo-numbers code {
+            background: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        #trackingResult {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .tracking-info {
+            padding: 30px;
+        }
+
+        .info-section {
+            margin-bottom: 30px;
+        }
+
+        .info-section h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .info-row .label {
+            font-weight: 600;
+            color: #555;
+            min-width: 180px;
+        }
+
+        .info-row .value {
+            color: #333;
+            flex: 1;
+        }
+
+        .status-in-transit {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .status-customs-clearance {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        .status-out-for-delivery {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 30px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -29px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #e0e0e0;
+        }
+
+        .timeline-item.active .timeline-marker {
+            background: #667eea;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 0.95em;
+        }
+
+        .timeline-status {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .timeline-location {
+            color: #666;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .timeline-description {
+            color: #777;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .info-row {
+                flex-direction: column;
+            }
+
+            .info-row .label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+
+            .timeline-header {
+                flex-direction: column;
+            }
+
+            .timeline-status {
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Delivered to You</h1>
+            <p>Track your parcel delivery in real-time</p>
+        </div>
+
+        <div class="tracking-form">
+            <div class="form-group">
+                <label for="trackingNumber">Enter Tracking Number</label>
+                <input 
+                    type="text" 
+                    id="trackingNumber" 
+                    placeholder="e.g., DT123456789"
+                    autocomplete="off"
+                >
+            </div>
+            <button class="btn-track" onclick="trackPackage()">Track Package</button>
+
+            <div class="demo-numbers">
+                <h3>📋 Demo Tracking Numbers:</h3>
+                <ul>
+                    <li><code>DT123456789</code> - In Transit from China</li>
+                    <li><code>DT987654321</code> - Customs Clearance</li>
+                    <li><code>DT456789123</code> - Out for Delivery</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="trackingResult"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
